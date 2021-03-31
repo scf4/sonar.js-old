@@ -1,0 +1,23 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "no-empty": ["warn", { "allowEmptyCatch": true }],
+    "eol-last": ["error"],
+    "quotes": ["error", "double"],
+    "semi": ["error"],
+
+    "array-bracket-newline": [{ "multiline": true }],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-floating-promises": "warn",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "arrow-parens": "off",
+    "comma-dangle": ["warn", "all"]
+  }
+}
