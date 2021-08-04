@@ -25,7 +25,7 @@ let createClient = async (args: Maybe<Partial<ClientArgs>>, createWebSocket = tr
     store.clientName ??= args?.clientName ?? ClientArgMissingError('clientName');
   });
 
-  await api.launch.stateCheck();
+  await api.launch.launch();
   await api.launch.loadAssets();
 
   // Open websocket connection and join room

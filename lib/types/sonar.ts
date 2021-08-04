@@ -1,6 +1,38 @@
-export interface StateCheckResponse {
-  state: 'ok' | 'block';
-  message?: string;
+export interface LaunchResponse {
+  stateCheck: {
+    state: 'ok' | 'block';
+    message?: string;
+  };
+  loginInfo: {
+    user: {
+      id: number;
+      username: string;
+      color: string;
+      colors: string[];
+      colorValue: number;
+      moderationState: 'none' | unknown;
+      profileImageUrl: string | null;
+      currentRoomId: number | null;
+      isOnline: boolean;
+      relationship: {
+        friendshipStatus: string,
+        isMuted: boolean;
+        isBlocking: boolean;
+        isBlockedBy: boolean;
+        isBestFriend: boolean;
+        notificationSetting: '';
+      };
+      displayAsBestFriend: boolean;
+      lastSeenAt: number | null;
+    };
+    authToken?: string;
+    flags: {
+      isHigherAudioQualityEnabled: boolean;
+      isV111AgoraChangesEnabled: boolean;
+      reducedHornSpamEnabled: boolean;
+    };
+    referralCode: string;
+  }
 }
 
 export interface AssetsResponse {
@@ -100,7 +132,7 @@ export interface FriendRequest {
 }
 
 export interface FriendRequestResponse {
-  friendshipStatus?: 'request_sent';
+  friendshipStatus?: 'requestSent';
 }
 
 export interface Droppable {
@@ -139,7 +171,7 @@ export interface RoomUser extends User {
 }
 
 export interface UserRelationship {
-  friendshipStatus: 'friends' | 'needs_approval' | 'not_friends' | 'request_sent';
+  friendshipStatus: 'friends' | 'needsApproval' | 'notFriends' | 'requestSent';
   isMuted: boolean;
   isBlocking: boolean;
   isBlockedBy: boolean;

@@ -1,14 +1,22 @@
 import * as request from 'lib/api/request';
 import { SONAR_BUILD, SONAR_VERSION } from 'lib/constants';
-import { StateCheckCallError } from 'lib/errors';
+import { StateCheckError } from 'lib/errors';
 import { getState, updateState } from 'lib/state';
-import { AssetsResponse, StateCheckResponse } from 'lib/types';
+import { AssetsResponse, LaunchResponse } from 'lib/types';
+import { setAuthData } from '../auth';
 
 let loadAssets = async () => {
   let hash = getState().cache.assets.hash ?? '';
   let path = hash ? `/assets?hash=${hash}` : '/assets';
 
-  let data = await request.get<AssetsResponse>(path);
+  let data: AssetsResponse;
+
+  try {
+    data = await request.get<AssetsResponse>(path);
+  } catch {
+    return; // 304 error quick fix
+  }
+
   let droppables = new Map(Object.entries(data.droppables));
 
   updateState(state => {
@@ -16,13 +24,28 @@ let loadAssets = async () => {
   });
 };
 
-let stateCheck = async () => {
-  let path = `/state-check?version=${SONAR_VERSION}&build=${SONAR_BUILD}`;
-  let resp = await request.get<StateCheckResponse>(path);
+let launch = async () => {
+  let path = `/launch?version=${SONAR_VERSION}&build=${SONAR_BUILD}`;
+  let resp = await request.get<LaunchResponse>(path);
 
-  if (resp.state !== 'ok') {
-    throw StateCheckCallError(resp.state, resp.message);
+  if (resp.stateCheck.state !== 'ok') {
+    throw StateCheckError(resp.stateCheck.state, resp.stateCheck.message);
   }
+
+  let { user, authToken } = resp.loginInfo
+
+  updateState(state => {
+    state.userId ??= user.id;
+
+    if (user.currentRoomId) {
+      state.initialRoomId = user.currentRoomId;
+    }
+  });
+
+  setAuthData(store => {
+    store.authToken = authToken;
+    store.clientName = user.username;
+  });
 };
 
-export { loadAssets, stateCheck };
+export { loadAssets, launch };
